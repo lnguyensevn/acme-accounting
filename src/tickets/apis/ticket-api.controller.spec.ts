@@ -1,25 +1,22 @@
-import { ConflictException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Company } from '../../db/models/Company';
-import {
-  TicketCategory,
-  TicketStatus,
-  TicketType,
-} from '../../db/models/Ticket';
-import { User, UserRole } from '../../db/models/User';
-import { DbModule } from '../db.module';
-import { TicketsController } from './tickets.controller';
+import { Company } from '../../companies/company.model';
+import { TicketCategory, TicketStatus, TicketType } from '../ticket.model';
+import { User, UserRole } from '../../users/user.model';
+import { DbModule } from '../../db.module';
+import { TicketApiController } from './ticket-api.controller';
+import { HttpException, InternalServerErrorException } from '@nestjs/common';
+import { TicketModule } from '../ticket.module';
 
 describe('TicketsController', () => {
-  let controller: TicketsController;
+  let controller: TicketApiController;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [TicketsController],
-      imports: [DbModule],
+      controllers: [TicketApiController],
+      imports: [DbModule, TicketModule],
     }).compile();
 
-    controller = module.get<TicketsController>(TicketsController);
+    controller = module.get<TicketApiController>(TicketApiController);
   });
 
   it('should be defined', async () => {
@@ -42,6 +39,8 @@ describe('TicketsController', () => {
         const ticket = await controller.create({
           companyId: company.id,
           type: TicketType.managementReport,
+          category: TicketCategory.accounting,
+          status: TicketStatus.open,
         });
 
         expect(ticket.category).toBe(TicketCategory.accounting);
@@ -65,6 +64,8 @@ describe('TicketsController', () => {
         const ticket = await controller.create({
           companyId: company.id,
           type: TicketType.managementReport,
+          category: TicketCategory.accounting,
+          status: TicketStatus.open,
         });
 
         expect(ticket.category).toBe(TicketCategory.accounting);
@@ -79,9 +80,11 @@ describe('TicketsController', () => {
           controller.create({
             companyId: company.id,
             type: TicketType.managementReport,
+            category: TicketCategory.accounting,
+            status: TicketStatus.open,
           }),
         ).rejects.toEqual(
-          new ConflictException(
+          new InternalServerErrorException(
             `Cannot find user with role accountant to create a ticket`,
           ),
         );
@@ -100,6 +103,8 @@ describe('TicketsController', () => {
         const ticket = await controller.create({
           companyId: company.id,
           type: TicketType.registrationAddressChange,
+          category: TicketCategory.corporate,
+          status: TicketStatus.open,
         });
 
         expect(ticket.category).toBe(TicketCategory.corporate);
@@ -124,10 +129,13 @@ describe('TicketsController', () => {
           controller.create({
             companyId: company.id,
             type: TicketType.registrationAddressChange,
+            category: TicketCategory.corporate,
+            status: TicketStatus.open,
           }),
         ).rejects.toEqual(
-          new ConflictException(
+          new HttpException(
             `Multiple users with role corporateSecretary. Cannot create a ticket`,
+            500,
           ),
         );
       });
@@ -139,9 +147,11 @@ describe('TicketsController', () => {
           controller.create({
             companyId: company.id,
             type: TicketType.registrationAddressChange,
+            category: TicketCategory.corporate,
+            status: TicketStatus.open,
           }),
         ).rejects.toEqual(
-          new ConflictException(
+          new InternalServerErrorException(
             `Cannot find user with role corporateSecretary to create a ticket`,
           ),
         );

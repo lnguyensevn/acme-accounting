@@ -1,5 +1,5 @@
 import { Controller, Get } from '@nestjs/common';
-import { User } from '../../db/models/User';
+import { User } from '../users/user.model';
 
 @Controller('api/v1/healthcheck')
 export class HealthcheckController {

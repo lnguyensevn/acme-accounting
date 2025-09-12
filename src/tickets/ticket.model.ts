@@ -7,22 +7,24 @@ import {
   PrimaryKey,
   AutoIncrement,
 } from 'sequelize-typescript';
-import { Company } from './Company';
-import { User } from './User';
+import { Company } from '../companies/company.model';
+import { User } from '../users/user.model';
 
 export enum TicketStatus {
   open = 'open',
   resolved = 'resolved',
+  deleted = 'deleted',
 }
 
 export enum TicketType {
   managementReport = 'managementReport',
   registrationAddressChange = 'registrationAddressChange',
+  strikeOff = 'strikeOff',
 }
 
 export enum TicketCategory {
   accounting = 'accounting',
-  corporate = 'registrationAddressChange',
+  corporate = 'corporate',
   management = 'management',
 }
 

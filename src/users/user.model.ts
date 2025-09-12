@@ -7,11 +7,12 @@ import {
   PrimaryKey,
   AutoIncrement,
 } from 'sequelize-typescript';
-import { Company } from './Company';
+import { Company } from '../companies/company.model';
 
 export enum UserRole {
   accountant = 'accountant',
   corporateSecretary = 'corporateSecretary',
+  director = 'director',
 }
 
 @Table({ tableName: 'users' })
