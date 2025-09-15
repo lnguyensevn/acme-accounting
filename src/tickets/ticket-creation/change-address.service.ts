@@ -3,6 +3,7 @@ import { TicketCreation } from '../libs/tickets.creation';
 import { CreateTicketDto, TicketDto } from '../libs/tickets.types';
 import { Ticket, TicketCategory, TicketType } from '../ticket.model';
 import { User, UserRole } from '../../users/user.model';
+import { AccountingTicketError } from '../../common/error';
 
 @Injectable()
 export class ChangeAddressService extends TicketCreation {
@@ -12,10 +13,10 @@ export class ChangeAddressService extends TicketCreation {
 
   protected async validate(ticket: CreateTicketDto): Promise<void> {
     if (ticket.type !== TicketType.registrationAddressChange) {
-      throw new Error('Invalid ticket type');
+      throw new AccountingTicketError('Invalid ticket type');
     }
     if (ticket.category !== TicketCategory.corporate) {
-      throw new Error('Invalid ticket category');
+      throw new AccountingTicketError('Invalid ticket category');
     }
 
     const secretaryCount = await User.count({
@@ -25,7 +26,7 @@ export class ChangeAddressService extends TicketCreation {
       },
     });
     if (secretaryCount > 1) {
-      throw new Error(
+      throw new AccountingTicketError(
         `Multiple users with role ${UserRole.corporateSecretary}. Cannot create a ticket`,
       );
     }
@@ -34,7 +35,9 @@ export class ChangeAddressService extends TicketCreation {
       where: { companyId: ticket.companyId, role: UserRole.director },
     });
     if (directorCount > 1) {
-      throw new Error('multiple directors found for the company');
+      throw new AccountingTicketError(
+        'multiple directors found for the company',
+      );
     }
 
     const existingRegTicket = await Ticket.count({
@@ -44,7 +47,7 @@ export class ChangeAddressService extends TicketCreation {
       },
     });
     if (existingRegTicket > 0) {
-      throw new Error('a record already exists');
+      throw new AccountingTicketError('a record already exists');
     }
   }
 
@@ -63,9 +66,7 @@ export class ChangeAddressService extends TicketCreation {
         where: { companyId: ticket.companyId, role: UserRole.director },
       });
       if (!assignee) {
-        throw new Error(
-          'Cannot find user with role corporateSecretary to create a ticket',
-        );
+        throw new AccountingTicketError('Cannot find assignee for the ticket');
       }
     }
 

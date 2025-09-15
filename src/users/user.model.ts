@@ -15,6 +15,11 @@ export enum UserRole {
   director = 'director',
 }
 
+export enum UserStatus {
+  active = 'active',
+  inactive = 'inactive',
+}
+
 @Table({ tableName: 'users' })
 export class User extends Model {
   @AutoIncrement
@@ -28,9 +33,29 @@ export class User extends Model {
   @Column
   declare role: UserRole;
 
+  @Column
+  declare status: UserStatus;
+
   @ForeignKey(() => Company)
+  @Column({
+    field: 'company_id',
+  })
   declare companyId: number;
 
   @BelongsTo(() => Company)
   company: Company;
+
+  @Column({
+    field: 'created_at',
+    allowNull: false,
+    defaultValue: new Date(),
+  })
+  declare createdAt: Date;
+
+  @Column({
+    field: 'updated_at',
+    allowNull: true,
+    defaultValue: new Date(),
+  })
+  declare updatedAt: Date;
 }

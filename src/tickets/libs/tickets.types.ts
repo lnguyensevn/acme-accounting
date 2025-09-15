@@ -1,3 +1,4 @@
+import { PaginationParamiters } from '../../common/type';
 import { TicketCategory, TicketStatus, TicketType } from '../ticket.model';
 
 export interface TicketDto {
@@ -15,3 +16,11 @@ export interface CreateTicketDto {
   status: TicketStatus;
   category: TicketCategory;
 }
+
+export type TicketFilter = {
+  type?: TicketType;
+  companyId?: number;
+  assigneeId?: number;
+  status?: TicketStatus;
+  category?: TicketCategory;
+} & PaginationParamiters;

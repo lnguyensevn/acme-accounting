@@ -5,14 +5,16 @@ import {
   HttpException,
   Logger,
   Post,
+  Query,
   UsePipes,
 } from '@nestjs/common';
-import { Company } from '../../companies/company.model';
-import { Ticket } from '../ticket.model';
-import { User } from '../../users/user.model';
 import { TicketService } from '../ticket.service';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
-import { CreateTicketRequest } from './ticket-api.view';
+import {
+  CreateTicketRequest,
+  CreateTicketResponse,
+  GetTicketsResponse,
+} from './ticket-api.view';
 
 @Controller('api/v1')
 @UsePipes(ZodValidationPipe)
@@ -20,9 +22,15 @@ export class TicketApiController {
   constructor(private readonly service: TicketService) {}
 
   @Get('/tickets')
-  async findAll() {
+  async list(
+    @Query('current') current: string = '1',
+    @Query('pageSize') pageSize: string = '20',
+  ): Promise<GetTicketsResponse> {
     try {
-      return await Ticket.findAll({ include: [Company, User] });
+      return await this.service.list({
+        current: parseInt(current, 10),
+        pageSize: parseInt(pageSize, 10),
+      });
     } catch (error) {
       Logger.error('Error fetching tickets:', error);
       if (error instanceof Error) {
@@ -33,7 +41,9 @@ export class TicketApiController {
   }
 
   @Post('/tickets')
-  async create(@Body() request: CreateTicketRequest) {
+  async create(
+    @Body() request: CreateTicketRequest,
+  ): Promise<CreateTicketResponse> {
     try {
       return await this.service.createTicket({
         type: request.type,

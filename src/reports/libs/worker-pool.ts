@@ -40,16 +40,19 @@ export class WorkerPool {
   ) {
     this.poolSize = this.size;
     this.workerPath = workerPath;
-    setInterval(() => {
-      const states = Object.entries(this.workers).map(([key, worker]) => ({
-        name: key,
-        state: worker.state,
-      }));
-      states.forEach((s) => {
-        Logger.debug(`Worker ${s.name} is ${s.state}`);
-      });
-      Logger.log(`Queue length: ${this.queue.length}`);
-    }, 5000);
+
+    if (process.env.ACME_ENV === 'dev') {
+      setInterval(() => {
+        const states = Object.entries(this.workers).map(([key, worker]) => ({
+          name: key,
+          state: worker.state,
+        }));
+        states.forEach((s) => {
+          Logger.debug(`Worker ${s.name} is ${s.state}`);
+        });
+        Logger.log(`Queue length: ${this.queue.length}`);
+      }, 5000);
+    }
   }
 
   init() {
@@ -147,7 +150,9 @@ export class WorkerPool {
 
   destroy() {
     for (const worker of Object.values(this.workers)) {
-      worker.worker.terminate();
+      worker.worker.terminate().catch((err) => {
+        Logger.error(`Error terminating worker ${worker.id}:`, err);
+      });
     }
     this.workers = {};
   }

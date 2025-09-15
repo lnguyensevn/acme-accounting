@@ -10,11 +10,13 @@ import { User } from '../users/user.model';
 
 interface CompanyCreateProperties {
   name: string;
-  status: CompanyStatus;
+  updatedAt?: Date;
 }
 
 interface CompanyProperties extends CompanyCreateProperties {
   id: number;
+  status: CompanyStatus;
+  createdAt: Date;
 }
 
 export enum CompanyStatus {
@@ -37,4 +39,18 @@ export class Company extends Model<CompanyProperties, CompanyCreateProperties> {
 
   @HasMany(() => User)
   declare users: User[];
+
+  @Column({
+    field: 'created_at',
+    allowNull: false,
+    defaultValue: new Date(),
+  })
+  declare createdAt: Date;
+
+  @Column({
+    field: 'updated_at',
+    allowNull: false,
+    defaultValue: new Date(),
+  })
+  declare updatedAt: Date;
 }

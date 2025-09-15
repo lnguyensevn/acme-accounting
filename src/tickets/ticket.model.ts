@@ -28,8 +28,22 @@ export enum TicketCategory {
   management = 'management',
 }
 
-@Table({ tableName: 'tickets' })
-export class Ticket extends Model {
+interface TicketCreationAttributes {
+  type: TicketType;
+  status: TicketStatus;
+  category: TicketCategory;
+  companyId: number;
+  assigneeId: number;
+}
+
+interface TicketAttributes extends TicketCreationAttributes {
+  id: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+@Table({ tableName: 'tickets', underscored: true })
+export class Ticket extends Model<TicketAttributes, TicketCreationAttributes> {
   @AutoIncrement
   @PrimaryKey
   @Column
@@ -44,10 +58,30 @@ export class Ticket extends Model {
   @Column
   declare category: TicketCategory;
 
+  @Column({
+    field: 'created_at',
+    allowNull: false,
+    defaultValue: new Date(),
+  })
+  declare createdAt: Date;
+
+  @Column({
+    field: 'updated_at',
+    allowNull: true,
+    defaultValue: new Date(),
+  })
+  declare updatedAt: Date;
+
   @ForeignKey(() => Company)
+  @Column({
+    field: 'company_id',
+  })
   declare companyId: number;
 
   @ForeignKey(() => User)
+  @Column({
+    field: 'assignee_id',
+  })
   declare assigneeId: number;
 
   @BelongsTo(() => Company)

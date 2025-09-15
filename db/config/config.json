@@ -5,7 +5,11 @@
     "port": 5590,
     "username": "user",
     "password": "password",
-    "database": "task-dev"
+    "database": "task-dev",
+    "define": {
+      "underscored": true,
+      "timestamps": false
+    }
   },
   "test": {
     "dialect": "postgres",
@@ -13,6 +17,10 @@
     "port": 5590,
     "username": "user",
     "password": "password",
-    "database": "task-test"
+    "database": "task-test",
+    "define": {
+      "underscored": true,
+      "timestamps": false
+    }
   }
 }

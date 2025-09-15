@@ -1,10 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { TicketCreation } from './libs/tickets.creation';
-import { TicketCategory, TicketStatus, TicketType } from './ticket.model';
-import { TicketDto } from './libs/tickets.types';
+import {
+  Ticket,
+  TicketCategory,
+  TicketStatus,
+  TicketType,
+} from './ticket.model';
+import { TicketDto, TicketFilter } from './libs/tickets.types';
 import { ManagementReportService } from './ticket-creation/report-management.service';
 import { ChangeAddressService } from './ticket-creation/change-address.service';
 import { StrikeOffService } from './ticket-creation/strike-off.service';
+import { getPagination } from '../utils/pagination';
+import { PaginationResult } from '../common/type';
 
 @Injectable()
 export class TicketService {
@@ -19,6 +26,44 @@ export class TicketService {
       [TicketType.strikeOff]: this.strikeOff,
       [TicketType.managementReport]: this.management,
       [TicketType.registrationAddressChange]: this.changeAddress,
+    };
+  }
+
+  async list(filter: TicketFilter): Promise<PaginationResult<TicketDto>> {
+    const where: Record<string, any> = {};
+    if (filter.type) {
+      where.type = filter.type;
+    }
+    if (filter.companyId) {
+      where.companyId = filter.companyId;
+    }
+    if (filter.assigneeId) {
+      where.assigneeId = filter.assigneeId;
+    }
+    if (filter.status) {
+      where.status = filter.status;
+    }
+    if (filter.category) {
+      where.category = filter.category;
+    }
+
+    const pagination = getPagination({
+      current: filter.current || 1,
+      pageSize: filter.pageSize || 20,
+    });
+
+    const data = await Ticket.findAll({
+      where,
+      limit: pagination.limit,
+      offset: pagination.offset,
+    });
+    const total = await Ticket.count({ where });
+
+    return {
+      total,
+      current: filter.current || 1,
+      pageSize: filter.pageSize || 20,
+      data,
     };
   }
 

@@ -1,3 +1,4 @@
+import { PaginationParamiters } from '../../common/type';
 import { UserRole } from '../user.model';
 
 export interface CreateUserDto {
@@ -6,9 +7,14 @@ export interface CreateUserDto {
   companyId: number;
 }
 
-export interface GetUserDto {
+export interface UserDto {
   id: number;
   name: string;
   role: UserRole;
   companyId: number;
 }
+
+export type ListUserFilter = {
+  companyId?: number;
+  role?: UserRole;
+} & PaginationParamiters;

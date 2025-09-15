@@ -18,7 +18,7 @@ export interface ReportState {
   status: ReportStatus;
   metrics?: {
     dataFetchingTimeTaken: number;
-    dataWriteTimeTake: number;
+    dataWriteTimeTaken: number;
     totalTimeTaken: number;
     generatedAt: Date;
   };
@@ -35,7 +35,10 @@ export class CacheState {
 
   setData(data: SharedData) {
     this.data = data;
-    this.time = new Date();
+  }
+
+  setCacheTime(time: Date) {
+    this.time = time;
   }
 
   setStates(type: ReportType, state: ReportState) {

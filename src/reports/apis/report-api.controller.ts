@@ -10,7 +10,11 @@ import {
   UsePipes,
 } from '@nestjs/common';
 import { ReportService } from '../report.service';
-import { GenerateReportsRequest } from './report-api.view';
+import {
+  GenerateReportsRequest,
+  GenerateReportsResponse,
+  GetReportsResponse,
+} from './report-api.view';
 import { ReportType } from '../libs/report.type';
 import { ZodValidationPipe } from '@anatine/zod-nestjs';
 
@@ -20,13 +24,13 @@ export class ReportApiController {
   constructor(private reportsService: ReportService) {}
 
   @Get('/reports')
-  report(@Query('types') types: string | undefined) {
+  report(@Query('types') types: string | undefined): GetReportsResponse {
     try {
       const reqTypes = types
         ? (types.split(',').map((type) => type.trim()) as ReportType[])
-        : undefined;
+        : Object.values(ReportType);
       return this.reportsService.get({
-        types: reqTypes ? reqTypes : Object.values(ReportType),
+        types: reqTypes,
       });
     } catch (error) {
       Logger.error('Error fetching reports:', error);
@@ -39,7 +43,9 @@ export class ReportApiController {
 
   @Post('/reports')
   @HttpCode(201)
-  async generate(@Body() body: GenerateReportsRequest) {
+  async generate(
+    @Body() body: GenerateReportsRequest,
+  ): Promise<GenerateReportsResponse> {
     try {
       const types = body.types ? body.types : Object.values(ReportType);
       this.reportsService.generate({ types }).catch((error) => {

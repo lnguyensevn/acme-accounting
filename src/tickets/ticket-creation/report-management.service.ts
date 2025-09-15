@@ -3,6 +3,7 @@ import { TicketCreation } from '../libs/tickets.creation';
 import { CreateTicketDto, TicketDto } from '../libs/tickets.types';
 import { Ticket, TicketCategory, TicketType } from '../ticket.model';
 import { User, UserRole } from '../../users/user.model';
+import { AccountingTicketError } from '../../common/error';
 
 @Injectable()
 export class ManagementReportService extends TicketCreation {
@@ -12,17 +13,17 @@ export class ManagementReportService extends TicketCreation {
 
   protected async validate(ticket: CreateTicketDto): Promise<void> {
     if (ticket.type !== TicketType.managementReport) {
-      throw new Error('Invalid ticket type');
+      throw new AccountingTicketError('Invalid ticket type');
     }
     if (ticket.category !== TicketCategory.accounting) {
-      throw new Error('Invalid ticket category');
+      throw new AccountingTicketError('Invalid ticket category');
     }
 
     const accountantCount = await User.count({
       where: { companyId: ticket.companyId, role: UserRole.accountant },
     });
     if (accountantCount <= 0) {
-      throw new Error(
+      throw new AccountingTicketError(
         'Cannot find user with role accountant to create a ticket',
       );
     }
@@ -37,7 +38,7 @@ export class ManagementReportService extends TicketCreation {
     });
 
     if (!accountant) {
-      throw new Error(
+      throw new AccountingTicketError(
         'Cannot find user with role accountant to create a ticket',
       );
     }
