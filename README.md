@@ -163,27 +163,17 @@ npm start
 5. Go to http://localhost:3000/api/v1/healthcheck 🍾
 
 # Testing
-We use the integration tests instead of a unit ones for controllers.
-It means we do not mock db requests but perform them on a test db.
+Unit tests should be independent and isolated from external dependencies
+They should focus on testing a single component in isolation
 
 To run tests:
 
-1.Run the DB container (if you did not before)
+Run the tests for this project
 ```sh
-docker-compose up -d
+npm run test
 ```
 
-2.Create a db
+Run the test coverage
 ```sh
-npm run db:create:test
-```
-
-3. Run migrations
-```sh
-npm run db:migrate:test
-```
-
-4. Test
-```sh
-npm test
+npx jest --coverage
 ```
