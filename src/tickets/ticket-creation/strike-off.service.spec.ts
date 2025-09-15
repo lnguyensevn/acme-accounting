@@ -26,17 +26,6 @@ const expectedTicket = {
   assigneeId: 1,
 };
 
-jest.mock('p-queue', () => {
-  return {
-    __esModule: true,
-    default: class MockPQueue {
-      add(fn: () => Promise<any>) {
-        return fn();
-      }
-    },
-  };
-});
-
 describe('StrikeOffService', () => {
   let strikeOff: StrikeOffService;
   let ticketMock: Ticket;

@@ -177,3 +177,9 @@ Run the test coverage
 ```sh
 npx jest --coverage
 ```
+
+# AI Usage
+
+* Research to find the readline package for performance reads
+* Research to find worker thread will help on improving concurrent read files
+* Autocomplete for some Unit tests

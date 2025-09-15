@@ -34,17 +34,6 @@ const strikeOffTicket: TicketDto = {
   companyId: 1,
 };
 
-jest.mock('p-queue', () => {
-  return {
-    __esModule: true,
-    default: class MockPQueue {
-      add(fn: () => Promise<any>) {
-        return fn();
-      }
-    },
-  };
-});
-
 describe('TicketsController', () => {
   let controller: TicketApiController;
   let ticketService: TicketService;
